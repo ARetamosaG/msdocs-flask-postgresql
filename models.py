@@ -11,7 +11,7 @@ class ImageView(db.Model):
     red_pixels = db.Column(db.Integer, default=0)
     green_pixels = db.Column(db.Integer, default=0)
     blue_pixels = db.Column(db.Integer, default=0)
-    total_pixels = db.Column(db.Integer, default=0)
+    other_pixels = db.Column(db.Integer, default=0)
     
     def to_dict(self):
         return {
@@ -22,5 +22,5 @@ class ImageView(db.Model):
             'red_pixels': self.red_pixels,
             'green_pixels': self.green_pixels,
             'blue_pixels': self.blue_pixels,
-            'total_pixels': self.total_pixels
+            'other_pixels': self.other_pixels
         }
