@@ -49,11 +49,19 @@ def index():
 @csrf.exempt
 def upload_image_data():
     data = request.json
+
+    # Comprobar posibles errores:
+    if data is None:
+        return jsonify({"success": False, "message": "No se recibió JSON válido"}), 400
     
     # Extraer datos principales
     username = data.get('username')
     filename = data.get('fileName')
     timestamp = data.get('timestamp')
+
+    # Comprobar más posibles errores:
+    if not (username and filename and timestamp):
+        return jsonify({"success": False, "message": "Faltan campos obligatorios"}), 400
     
     # Extraer estadísticas de color
     pixel_stats = data.get('pixelStats', {})
@@ -73,6 +81,12 @@ def upload_image_data():
         else:
             other_pixels += count
     
+    # Comprobar más errores:
+    try:
+        processed_date = datetime.strptime(timestamp, '%Y-%m-%d %H:%M:%S')
+    except ValueError:
+        return jsonify({"success": False, "message": "Formato de fecha inválido"}), 400
+
     # Crear nuevo registro en la base de datos
     new_image_view = ImageView(
         username=username,
