@@ -137,7 +137,7 @@ def upload_image_data():
     red_pixels = 0
     green_pixels = 0
     blue_pixels = 0
-    other_pixels = 0
+    total_pixels = 0
     
     # Analizar las estadísticas de colores para clasificarlos
     for color_key, count in pixel_stats.items():
@@ -148,7 +148,7 @@ def upload_image_data():
         elif color_key.startswith('B7') or color_key.startswith('B6'):
             blue_pixels += count
         else:
-            other_pixels += count
+            total_pixels += count
     
     # Comprobar más errores:
     try:
@@ -164,7 +164,7 @@ def upload_image_data():
         red_pixels=red_pixels,
         green_pixels=green_pixels,
         blue_pixels=blue_pixels,
-        other_pixels=other_pixels
+        total_pixels=total_pixels
     )
     
     try:
