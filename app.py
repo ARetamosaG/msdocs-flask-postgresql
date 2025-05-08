@@ -164,7 +164,7 @@ def upload_image_data():
         red_pixels=red_pixels,
         green_pixels=green_pixels,
         blue_pixels=blue_pixels,
-        total_pixels=total_pixels
+        other_pixels=other_pixels
     )
     
     try:
