@@ -44,6 +44,7 @@ def index():
     return render_template('base.html')
 
 @app.route('/api/upload-image-data', methods=['POST'])
+@csrf.exempt
 def upload_image_data():
     data = request.json
     
