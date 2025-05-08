@@ -1,5 +1,6 @@
 import os
 from datetime import datetime
+import logging
 
 from flask import Flask, redirect, render_template, request, send_from_directory, url_for, jsonify
 from flask_migrate import Migrate
@@ -104,6 +105,8 @@ def upload_image_data():
         return jsonify({"success": True, "message": "Data saved successfully"}), 200
     except Exception as e:
         db.session.rollback()
+        print("ERROR AL GUARDAR EN BD:", e)
+        app.logger.error("Error al guardar los datos: %s", str(e))
         return jsonify({"success": False, "message": str(e)}), 500
 
 if __name__ == '__main__':
