@@ -17,14 +17,15 @@ depends_on = None
 
 
 def upgrade():
-    # Eliminar la restricción de clave foránea antes de eliminar la tabla 'review'
+
+    # Eliminar la restricción de clave foránea antes de eliminar la tabla 'review':
     op.drop_constraint('review_restaurant_fkey', 'review', type_='foreignkey')
     
-    # Eliminar las tablas
+    # Eliminar las tablas:
     op.drop_table('restaurant')
     op.drop_table('review')
 
-    # Crear la nueva tabla 'image_view'
+    # Crear la nueva tabla 'image_view':
     op.create_table('image_view',
         sa.Column('id', sa.Integer(), nullable=False),
         sa.Column('username', sa.String(length=100), nullable=False),
