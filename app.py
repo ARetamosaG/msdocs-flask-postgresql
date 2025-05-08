@@ -34,6 +34,8 @@ migrate = Migrate(app, db)
 # The import must be done after db initialization due to circular import issue
 from models import ImageView
 
+#
+
 # Contexto global para todas las plantillas
 @app.context_processor
 def inject_now():
