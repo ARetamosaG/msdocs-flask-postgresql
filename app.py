@@ -1,6 +1,7 @@
 import os
 from datetime import datetime
 import logging
+import re
 
 from flask import Flask, redirect, render_template, request, send_from_directory, url_for, jsonify
 from flask_migrate import Migrate
@@ -139,14 +140,26 @@ def upload_image_data():
     blue_pixels = 0
     other_pixels = 0
     
-    # Analizar las estadísticas de colores para clasificarlos
+    # Analizar las estadísticas de colores para clasificarlos:
     for color_key, count in pixel_stats.items():
-        if color_key.startswith('R7') or color_key.startswith('R6'):
-            red_pixels += count
-        elif color_key.startswith('G7') or color_key.startswith('G6'):
-            green_pixels += count
-        elif color_key.startswith('B7') or color_key.startswith('B6'):
-            blue_pixels += count
+        match = re.match(r"R(\d+)-G(\d+)-B(\d+)", color_key)
+        if match:
+            r, g, b = map(int, match.groups())
+
+            # Clasificación por canal dominante:
+            if r >= 6 and r >= g and r >= b:
+                red_pixels += count
+                other_pixels += count
+            elif g >= 6 and g >= r and g >= b:
+                green_pixels += count
+                other_pixels += count
+            elif b >= 6 and b >= r and b >= g:
+                blue_pixels += count
+                other_pixels += count
+            else:
+                other_pixels += count
+                
+        # Incluir en el conteo total aunque el formato sea inesperado:
         else:
             other_pixels += count
     
