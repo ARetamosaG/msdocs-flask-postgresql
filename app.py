@@ -114,5 +114,68 @@ def get_image_data():
         }
     })
 
+@app.route('/api/upload-image-data', methods=['POST'])
+@csrf.exempt
+def upload_image_data():
+    data = request.json
+
+    # Comprobar posibles errores:
+    if data is None:
+        return jsonify({"success": False, "message": "No se recibió JSON válido"}), 400
+    
+    # Extraer datos principales
+    username = data.get('username')
+    filename = data.get('fileName')
+    timestamp = data.get('timestamp')
+
+    # Comprobar más posibles errores:
+    if not (username and filename and timestamp):
+        return jsonify({"success": False, "message": "Faltan campos obligatorios"}), 400
+    
+    # Extraer estadísticas de color
+    pixel_stats = data.get('pixelStats', {})
+    red_pixels = 0
+    green_pixels = 0
+    blue_pixels = 0
+    other_pixels = 0
+    
+    # Analizar las estadísticas de colores para clasificarlos
+    for color_key, count in pixel_stats.items():
+        if color_key.startswith('R7') or color_key.startswith('R6'):
+            red_pixels += count
+        elif color_key.startswith('G7') or color_key.startswith('G6'):
+            green_pixels += count
+        elif color_key.startswith('B7') or color_key.startswith('B6'):
+            blue_pixels += count
+        else:
+            other_pixels += count
+    
+    # Comprobar más errores:
+    try:
+        processed_date = datetime.strptime(timestamp, '%Y-%m-%d %H:%M:%S')
+    except ValueError:
+        return jsonify({"success": False, "message": "Formato de fecha inválido"}), 400
+
+    # Crear nuevo registro en la base de datos
+    new_image_view = ImageView(
+        username=username,
+        filename=filename,
+        processed_date=datetime.strptime(timestamp, '%Y-%m-%d %H:%M:%S'),
+        red_pixels=red_pixels,
+        green_pixels=green_pixels,
+        blue_pixels=blue_pixels,
+        other_pixels=other_pixels
+    )
+    
+    try:
+        db.session.add(new_image_view)
+        db.session.commit()
+        return jsonify({"success": True, "message": "Data saved successfully"}), 200
+    except Exception as e:
+        db.session.rollback()
+        print("ERROR AL GUARDAR EN BD:", e)
+        app.logger.error("Error al guardar los datos: %s", str(e))
+        return jsonify({"success": False, "message": str(e)}), 500
+
 if __name__ == '__main__':
     app.run(debug=True)
